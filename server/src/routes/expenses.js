@@ -25,4 +25,26 @@ router.get('/', async (req, res) => {
   res.json(rows);
 });
 
+// GET /api/expenses/:id
+router.get('/:id', async (req, res) => {
+    const id =Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0){
+        return res.status(400).json({ error: 'id must be a whole positive number'});
+    }
+    
+    const sql = `
+        SELECT e.id, e.amount, e.spent_on, e.note, e.category_id, c.name AS category
+        FROM expenses e
+        JOIN categories c ON c.id = e.category_id
+        WHERE e.id = $1 AND e.user_id = $2`;
+
+    const { rows } = await pool.query(sql, [id,TEMP_USER_ID]);
+
+    if (rows.length === 0) {
+        return res.status(404).json({ error: 'Expense not found'});
+    }
+    res.json(rows[0]);
+});
+
 export default router;
