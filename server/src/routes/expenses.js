@@ -142,4 +142,27 @@ router.put('/:id', async (req, res) => {
   res.json(rows[0]);
 });
 
+// DELETE /api/expenses/:id
+router.delete('/:id', async (req, res) => {
+  // 1. Check the id in the URL
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'id must be a whole positive number' });
+  }
+
+  // 2. Delete only if it belongs to this user
+  const result = await pool.query(
+    'DELETE FROM expenses WHERE id = $1 AND user_id = $2',
+    [id, TEMP_USER_ID]
+  );
+
+  // 3. Nothing deleted = not found / not yours
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: 'Expense not found' });
+  }
+
+  // 4. Success, nothing to send back
+  res.status(204).end();
+});
+
 export default router;
