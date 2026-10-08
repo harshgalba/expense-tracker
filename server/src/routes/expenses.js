@@ -7,9 +7,9 @@ const TEMP_USER_ID = 1; // TODO Day 3: replace with the logged-in user
 // Checks an expense from the request body.
 // Returns an error message, or null if everything is valid.
 function validateExpense(body) {
-  const {amount, spent_on, category_id, note } = body ?? {};
+  const { amount, spent_on, category_id, note } = body ?? {};
 
-  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <=0) {
+  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
     return 'amount must be a number greater than 0';
   }
 
@@ -19,7 +19,7 @@ function validateExpense(body) {
   if (typeof spent_on !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(spent_on)) {
     return 'spent_on must be a date in YYYY-MM-DD format';
   }
-    const date = new Date(`${spent_on}T00:00:00Z`);
+  const date = new Date(`${spent_on}T00:00:00Z`);
   if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== spent_on) {
     return 'spent_on is not a real date';
   }
@@ -30,7 +30,6 @@ function validateExpense(body) {
     return 'note must be text';
   }
   return null;
-
 }
 
 // GET /api/expenses?month=YYYY-MM
@@ -56,24 +55,24 @@ router.get('/', async (req, res) => {
 
 // GET /api/expenses/:id
 router.get('/:id', async (req, res) => {
-    const id =Number(req.params.id);
+  const id = Number(req.params.id);
 
-    if (!Number.isInteger(id) || id <= 0){
-        return res.status(400).json({ error: 'id must be a whole positive number'});
-    }
-    
-    const sql = `
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'id must be a whole positive number' });
+  }
+
+  const sql = `
         SELECT e.id, e.amount, e.spent_on, e.note, e.category_id, c.name AS category
         FROM expenses e
         JOIN categories c ON c.id = e.category_id
         WHERE e.id = $1 AND e.user_id = $2`;
 
-    const { rows } = await pool.query(sql, [id,TEMP_USER_ID]);
+  const { rows } = await pool.query(sql, [id, TEMP_USER_ID]);
 
-    if (rows.length === 0) {
-        return res.status(404).json({ error: 'Expense not found'});
-    }
-    res.json(rows[0]);
+  if (rows.length === 0) {
+    return res.status(404).json({ error: 'Expense not found' });
+  }
+  res.json(rows[0]);
 });
 
 // POST /api/expenses
@@ -103,6 +102,44 @@ router.post('/', async (req, res) => {
   );
 
   res.status(201).json(rows[0]);
+});
+
+// PUT /api/expenses/:id
+router.put('/:id', async (req, res) => {
+
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'id must be a whole positive number' });
+  }
+
+  const error = validateExpense(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const { amount, spent_on, category_id, note } = req.body;
+
+  const category = await pool.query(
+    'SELECT id FROM categories WHERE id = $1 AND (user_id IS NULL OR user_id = $2)',
+    [category_id, TEMP_USER_ID]
+  );
+  if (category.rows.length === 0) {
+    return res.status(400).json({ error: 'category not found' });
+  }
+
+  const { rows } = await pool.query(
+    `UPDATE expenses
+     SET amount = $1, spent_on = $2, category_id = $3, note = $4
+     WHERE id = $5 AND user_id = $6
+     RETURNING id, amount, spent_on, note, category_id`,
+    [amount, spent_on, category_id, note ?? null, id, TEMP_USER_ID]
+  );
+
+  if (rows.length === 0) {
+    return res.status(404).json({ error: 'Expense not found' });
+  }
+
+  res.json(rows[0]);
 });
 
 export default router;
