@@ -1,6 +1,7 @@
 import express from 'express';
 import { pool } from './db.js';
 import expensesRouter from './routes/expenses.js';
+import authRouter from './routes/auth.js';
 
 const app = express();
 
@@ -10,6 +11,8 @@ app.get('/api/health', async (req, res) => {
   const result = await pool.query('SELECT NOW()');
   res.json({ ok: true, dbTime: result.rows[0].now });
 });
+
+app.use('/api/auth', authRouter);
 
 app.use('/api/expenses', expensesRouter);
 
