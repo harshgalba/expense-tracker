@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { pool } from '../db.js';
 
 const router = Router();
-const TEMP_USER_ID = 1; // TODO Day 3: replace with the logged-in user
 
 // Checks an expense from the request body.
 // Returns an error message, or null if everything is valid.
@@ -49,7 +48,7 @@ router.get('/', async (req, res) => {
       AND e.spent_on <  $2::date + INTERVAL '1 month'
     ORDER BY e.spent_on DESC, e.id DESC`;
 
-  const { rows } = await pool.query(sql, [TEMP_USER_ID, `${month}-01`]);
+  const { rows } = await pool.query(sql, [req.userId, `${month}-01`]);
   res.json(rows);
 });
 
@@ -67,7 +66,7 @@ router.get('/:id', async (req, res) => {
         JOIN categories c ON c.id = e.category_id
         WHERE e.id = $1 AND e.user_id = $2`;
 
-  const { rows } = await pool.query(sql, [id, TEMP_USER_ID]);
+  const { rows } = await pool.query(sql, [id, req.userId]);
 
   if (rows.length === 0) {
     return res.status(404).json({ error: 'Expense not found' });
@@ -88,7 +87,7 @@ router.post('/', async (req, res) => {
   // a default (user_id IS NULL) or one of their own.
   const category = await pool.query(
     'SELECT id FROM categories WHERE id = $1 AND (user_id IS NULL OR user_id = $2)',
-    [category_id, TEMP_USER_ID]
+    [category_id, req.userId]
   );
   if (category.rows.length === 0) {
     return res.status(400).json({ error: 'category not found' });
@@ -98,7 +97,7 @@ router.post('/', async (req, res) => {
     `INSERT INTO expenses (user_id, category_id, amount, spent_on, note)
      VALUES ($1, $2, $3, $4, $5)
      RETURNING id, amount, spent_on, note, category_id`,
-    [TEMP_USER_ID, category_id, amount, spent_on, note ?? null]
+    [req.userId, category_id, amount, spent_on, note ?? null]
   );
 
   res.status(201).json(rows[0]);
@@ -121,7 +120,7 @@ router.put('/:id', async (req, res) => {
 
   const category = await pool.query(
     'SELECT id FROM categories WHERE id = $1 AND (user_id IS NULL OR user_id = $2)',
-    [category_id, TEMP_USER_ID]
+    [category_id, req.userId]
   );
   if (category.rows.length === 0) {
     return res.status(400).json({ error: 'category not found' });
@@ -132,7 +131,7 @@ router.put('/:id', async (req, res) => {
      SET amount = $1, spent_on = $2, category_id = $3, note = $4
      WHERE id = $5 AND user_id = $6
      RETURNING id, amount, spent_on, note, category_id`,
-    [amount, spent_on, category_id, note ?? null, id, TEMP_USER_ID]
+    [amount, spent_on, category_id, note ?? null, id, req.userId]
   );
 
   if (rows.length === 0) {
@@ -153,7 +152,7 @@ router.delete('/:id', async (req, res) => {
   // 2. Delete only if it belongs to this user
   const result = await pool.query(
     'DELETE FROM expenses WHERE id = $1 AND user_id = $2',
-    [id, TEMP_USER_ID]
+    [id, req.userId]
   );
 
   // 3. Nothing deleted = not found / not yours
