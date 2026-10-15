@@ -52,6 +52,32 @@ router.get('/', async (req, res) => {
   res.json(rows);
 });
 
+// GET /api/expenses/summary?month=YYYY-MM
+// Total spent per category for one month.
+router.get('/summary', async (req, res) => {
+  const { month } = req.query;
+
+  if (!/^\d{4}-\d{2}$/.test(month ?? '')) {
+    return res.status(400).json({ error: 'month must be YYYY-MM' });
+  }
+
+  const sql = `
+    SELECT c.id AS category_id, c.name AS category, SUM(e.amount) AS total
+    FROM expenses e
+    JOIN categories c ON c.id = e.category_id
+    WHERE e.user_id = $1
+      AND e.spent_on >= $2::date
+      AND e.spent_on <  $2::date + INTERVAL '1 month'
+    GROUP BY c.id, c.name
+    ORDER BY total DESC`;
+
+  const { rows } = await pool.query(sql, [req.userId, `${month}-01`]);
+
+  const total = rows.reduce((sum, row) => sum + Number(row.total), 0);
+
+  res.json({ month, total: total.toFixed(2), byCategory: rows });
+});
+
 // GET /api/expenses/:id
 router.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
