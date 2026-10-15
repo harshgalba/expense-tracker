@@ -3,6 +3,7 @@ import { pool } from './db.js';
 import expensesRouter from './routes/expenses.js';
 import authRouter from './routes/auth.js';
 import { requireAuth } from './middleware/requireAuth.js';
+import categoriesRouter from './routes/categories.js';
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.get('/api/health', async (req, res) => {
 app.use('/api/auth', authRouter);
 
 app.use('/api/expenses', requireAuth , expensesRouter);
+
+app.use('/api/categories', requireAuth, categoriesRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
