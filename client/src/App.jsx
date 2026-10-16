@@ -1,121 +1,100 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+// 1. Data for the sidebar. Keeping it in an array means adding
+//    a page later is one line, not a copy-pasted block of JSX.
+const navGroups = [
+  {
+    title: 'Overview',
+    links: ['Dashboard'],
+  },
+  {
+    title: 'Money',
+    links: ['Expenses', 'Categories', 'Recurring'],
+  },
+]
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="min-h-screen bg-[#111] text-neutral-100">
+      {/* 2. Top bar: stays at the top while you scroll */}
+      <header className="sticky top-0 z-10 h-16 border-b border-neutral-800 bg-[#111]/90 backdrop-blur">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
+          <a href="/" className="text-lg font-bold">
+            Expense Tracker
+          </a>
+          <nav className="flex gap-6 text-sm text-neutral-400">
+            <a href="#" className="hover:text-neutral-100">Log in</a>
+            <a href="#" className="hover:text-neutral-100">Register</a>
+          </nav>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+      </header>
+
+      {/* 3. Three columns: sidebar | content | "this month" */}
+      <div className="mx-auto flex max-w-7xl">
+        {/* Left sidebar: hidden on phones, shown from tablet width up */}
+        <aside className="hidden w-64 shrink-0 border-r border-neutral-800 px-6 py-8 md:block">
+          {navGroups.map((group) => (
+            <div key={group.title} className="mb-6">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                {group.title}
+              </p>
+              <ul className="space-y-1">
+                {group.links.map((link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="block rounded-md px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </aside>
+
+        {/* Middle: the main page content */}
+        <main className="min-w-0 flex-1 px-6 py-10 md:px-12">
+          <h1 className="text-4xl font-bold tracking-tight">Welcome</h1>
+          <p className="mt-4 max-w-2xl leading-7 text-neutral-400">
+            Log your expenses, mark the ones that repeat every month, and see
+            where your money actually goes.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
 
-      <div className="ticks"></div>
+          <h2 className="mt-10 border-b border-neutral-800 pb-2 text-2xl font-semibold">
+            Getting started
+          </h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border border-neutral-800 p-5">
+              <h3 className="font-semibold">Add an expense</h3>
+              <p className="mt-1 text-sm text-neutral-400">
+                Amount, category, date — that's it.
+              </p>
+            </div>
+            <div className="rounded-lg border border-neutral-800 p-5">
+              <h3 className="font-semibold">Check your summary</h3>
+              <p className="mt-1 text-sm text-neutral-400">
+                See your spending by category for any month.
+              </p>
+            </div>
+          </div>
+        </main>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        {/* Right column: only on wide screens */}
+        <aside className="hidden w-56 shrink-0 py-10 pr-6 xl:block">
+          <p className="mb-3 text-sm font-semibold">This month</p>
+          <dl className="space-y-2 text-sm text-neutral-400">
+            <div className="flex justify-between">
+              <dt>Spent</dt>
+              <dd className="font-medium text-neutral-100">₹0</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt>Expenses</dt>
+              <dd className="font-medium text-neutral-100">0</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </div>
   )
 }
 
