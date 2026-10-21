@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 // 1. Data for the sidebar. Keeping it in an array means adding
 //    a page later is one line, not a copy-pasted block of JSX.
 const navGroups = [
@@ -12,6 +13,17 @@ const navGroups = [
 ]
 
 function App() {
+    // 'checking' → 'online' or 'offline'
+  const [apiStatus, setApiStatus] = useState('checking')
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then((res) => {
+        if (!res.ok) throw new Error('API error')
+        setApiStatus('online')
+      })
+      .catch(() => setApiStatus('offline'))
+  }, [])
   return (
     <div className="min-h-screen bg-[#111] text-neutral-100">
       {/* 2. Top bar: stays at the top while you scroll */}
@@ -21,6 +33,7 @@ function App() {
             Expense Tracker
           </a>
           <nav className="flex gap-6 text-sm text-neutral-400">
+            <span className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'}>API: {apiStatus}</span>
             <a href="#" className="hover:text-neutral-100">Log in</a>
             <a href="#" className="hover:text-neutral-100">Register</a>
           </nav>
