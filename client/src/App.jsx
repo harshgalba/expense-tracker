@@ -1,16 +1,6 @@
 import { useEffect, useState } from 'react'
-// 1. Data for the sidebar. Keeping it in an array means adding
-//    a page later is one line, not a copy-pasted block of JSX.
-const navGroups = [
-  {
-    title: 'Overview',
-    links: ['Dashboard'],
-  },
-  {
-    title: 'Money',
-    links: ['Expenses', 'Categories', 'Recurring'],
-  },
-]
+import Header from './components/Header'
+import Sidebar from './components/Sidebar'
 
 function App() {
     // 'checking' → 'online' or 'offline'
@@ -26,45 +16,11 @@ function App() {
   }, [])
   return (
     <div className="min-h-screen bg-[#111] text-neutral-100">
-      {/* 2. Top bar: stays at the top while you scroll */}
-      <header className="sticky top-0 z-10 h-16 border-b border-neutral-800 bg-[#111]/90 backdrop-blur">
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
-          <a href="/" className="text-lg font-bold">
-            Expense Tracker
-          </a>
-          <nav className="flex gap-6 text-sm text-neutral-400">
-            <span className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'}>API: {apiStatus}</span>
-            <a href="#" className="hover:text-neutral-100">Log in</a>
-            <a href="#" className="hover:text-neutral-100">Register</a>
-          </nav>
-        </div>
-      </header>
-
+      <Header apiStatus={apiStatus} />
       {/* 3. Three columns: sidebar | content | "this month" */}
       <div className="mx-auto flex max-w-7xl">
         {/* Left sidebar: hidden on phones, shown from tablet width up */}
-        <aside className="hidden w-64 shrink-0 border-r border-neutral-800 px-6 py-8 md:block">
-          {navGroups.map((group) => (
-            <div key={group.title} className="mb-6">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                {group.title}
-              </p>
-              <ul className="space-y-1">
-                {group.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </aside>
-
+      <Sidebar/>
         {/* Middle: the main page content */}
         <main className="min-w-0 flex-1 px-6 py-10 md:px-12">
           <h1 className="text-4xl font-bold tracking-tight">Welcome</h1>
