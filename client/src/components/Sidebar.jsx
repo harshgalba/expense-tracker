@@ -1,13 +1,20 @@
+import { NavLink } from 'react-router'
+
 const navGroups = [
   {
     title: 'Overview',
-    links: ['Dashboard'],
+    links: [{ label: 'Dashboard', to: '/' }],
   },
   {
     title: 'Money',
-    links: ['Expenses', 'Categories', 'Recurring'],
+    links: [
+      { label: 'Expenses', to: '/expenses' },
+      { label: 'Categories', to: '/categories' },
+      { label: 'Recurring', to: '/recurring' },
+    ],
   },
 ]
+
 function Sidebar() {
     return (
         <aside className="hidden w-64 shrink-0 border-r border-neutral-800 px-6 py-8 md:block">
@@ -16,21 +23,28 @@ function Sidebar() {
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
                 {group.title}
               </p>
-              <ul className="space-y-1">
+                <ul className="space-y-1">
                 {group.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="block rounded-md px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800"
+                  <li key={link.to}>
+                    <NavLink
+                      to={link.to}
+                      end={link.to === '/'}
+                      className={({ isActive }) =>
+                        isActive
+                          ? 'block rounded-md px-3 py-1.5 text-sm bg-blue-500/10 text-blue-400'
+                          : 'block rounded-md px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800'
+                      }
                     >
-                      {link}
-                    </a>
+                      {link.label}
+                    </NavLink>
                   </li>
                 ))}
               </ul>
+              
             </div>
           ))}
         </aside>
     )
 }
+
 export default Sidebar

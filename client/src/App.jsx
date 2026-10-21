@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
+import { Routes, Route } from 'react-router'
+import Home from './pages/Home'
+import Expenses from './pages/Expenses'
+import Categories from './pages/Categories'
+import Recurring from './pages/Recurring'
 
 function App() {
     // 'checking' → 'online' or 'offline'
@@ -22,31 +27,15 @@ function App() {
         {/* Left sidebar: hidden on phones, shown from tablet width up */}
       <Sidebar/>
         {/* Middle: the main page content */}
-        <main className="min-w-0 flex-1 px-6 py-10 md:px-12">
-          <h1 className="text-4xl font-bold tracking-tight">Welcome</h1>
-          <p className="mt-4 max-w-2xl leading-7 text-neutral-400">
-            Log your expenses, mark the ones that repeat every month, and see
-            where your money actually goes.
-          </p>
 
-          <h2 className="mt-10 border-b border-neutral-800 pb-2 text-2xl font-semibold">
-            Getting started
-          </h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-neutral-800 p-5">
-              <h3 className="font-semibold">Add an expense</h3>
-              <p className="mt-1 text-sm text-neutral-400">
-                Amount, category, date — that's it.
-              </p>
-            </div>
-            <div className="rounded-lg border border-neutral-800 p-5">
-              <h3 className="font-semibold">Check your summary</h3>
-              <p className="mt-1 text-sm text-neutral-400">
-                See your spending by category for any month.
-              </p>
-            </div>
-          </div>
-        </main>
+        <div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/recurring" element={<Recurring />} />
+          </Routes>
+        </div>
 
         {/* Right column: only on wide screens */}
         <aside className="hidden w-56 shrink-0 py-10 pr-6 xl:block">
