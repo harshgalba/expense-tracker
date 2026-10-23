@@ -8,6 +8,7 @@ import Categories from './pages/Categories'
 import Recurring from './pages/Recurring'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import RequireAuth from './components/RequireAuth'
 
 function App() {
     // 'checking' → 'online' or 'offline'
@@ -33,11 +34,11 @@ function App() {
         <div>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/recurring" element={<Recurring />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register/>}/>
+            <Route path="/register" element={<Register />} />
+            <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
+            <Route path="/categories" element={<RequireAuth><Categories /></RequireAuth>} />
+            <Route path="/recurring" element={<RequireAuth><Recurring /></RequireAuth>} />
           </Routes>
         </div>
 
