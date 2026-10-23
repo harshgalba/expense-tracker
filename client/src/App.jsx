@@ -7,6 +7,7 @@ import Expenses from './pages/Expenses'
 import Categories from './pages/Categories'
 import Recurring from './pages/Recurring'
 import Login from './pages/Login'
+import Register from './pages/Register'
 
 function App() {
     // 'checking' → 'online' or 'offline'
@@ -36,6 +37,7 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/recurring" element={<Recurring />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register/>}/>
           </Routes>
         </div>
 
