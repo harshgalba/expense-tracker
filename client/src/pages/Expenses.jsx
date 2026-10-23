@@ -24,12 +24,15 @@ export default function Expenses() {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Form fields
   const [amount, setAmount] = useState('')
   const [spentOn, setSpentOn] = useState(today)
   const [categoryId, setCategoryId] = useState('')
   const [note, setNote] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   // Load the categories once, when the page opens
   useEffect(() => {
@@ -44,7 +47,7 @@ export default function Expenses() {
       .catch(() => setError('Could not load categories'))
   }, [])
 
-  // Load the expenses again every time the month changes
+  // Load the expenses when the month changes, or after a new one is saved
   useEffect(() => {
     setLoading(true)
     setError('')
@@ -59,7 +62,43 @@ export default function Expenses() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
-  }, [month])
+  }, [month, refreshKey])
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setSaveError('')
+    setSaving(true)
+
+    try {
+      const res = await fetch('/api/expenses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          amount: Number(amount),
+          spent_on: spentOn,
+          category_id: Number(categoryId),
+          note: note.trim() || null,
+        }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setSaveError(data.error || 'Could not save expense')
+        return
+      }
+
+      setAmount('')
+      setNote('')
+      setRefreshKey((k) => k + 1)
+    } catch {
+      setSaveError('Could not reach the server')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <main className="min-w-0 flex-1 px-6 py-10 md:px-12">
@@ -74,7 +113,7 @@ export default function Expenses() {
       </div>
 
       <form
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={handleSubmit}
         className="mt-6 grid gap-4 rounded-lg border border-neutral-800 p-5 sm:grid-cols-2"
       >
         <label className="block">
@@ -127,12 +166,16 @@ export default function Expenses() {
           />
         </label>
 
-        <button
-          type="submit"
-          className="rounded-md bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-400 sm:col-span-2"
-        >
-          Add expense
-        </button>
+        <div className="sm:col-span-2">
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-md bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-400 disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Add expense'}
+          </button>
+          {saveError && <p className="mt-3 text-sm text-red-400">{saveError}</p>}
+        </div>
       </form>
 
       {loading && <p className="mt-6 text-neutral-400">Loading…</p>}
