@@ -34,6 +34,9 @@ export default function Expenses() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
+  // The id of the expense being edited, or null when adding a new one
+  const [editingId, setEditingId] = useState(null)
+
   // Shown above the list when a delete fails
   const [deleteError, setDeleteError] = useState('')
 
@@ -67,14 +70,38 @@ export default function Expenses() {
       .finally(() => setLoading(false))
   }, [month, refreshKey])
 
+  // Clears the form back to "add a new expense"
+  function resetForm() {
+    setEditingId(null)
+    setAmount('')
+    setNote('')
+    setSpentOn(today())
+    setCategoryId(categories.length > 0 ? String(categories[0].id) : '')
+    setSaveError('')
+  }
+
+  // Fills the form with an existing expense
+  function startEdit(exp) {
+    setEditingId(exp.id)
+    setAmount(String(exp.amount))
+    setSpentOn(exp.spent_on)
+    setCategoryId(String(exp.category_id))
+    setNote(exp.note || '')
+    setSaveError('')
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setSaveError('')
     setSaving(true)
 
+    // Editing uses PUT on the expense's own URL; adding uses POST on the list URL
+    const url = editingId ? `/api/expenses/${editingId}` : '/api/expenses'
+    const method = editingId ? 'PUT' : 'POST'
+
     try {
-      const res = await fetch('/api/expenses', {
-        method: 'POST',
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -93,8 +120,7 @@ export default function Expenses() {
         return
       }
 
-      setAmount('')
-      setNote('')
+      resetForm()
       setRefreshKey((k) => k + 1)
     } catch {
       setSaveError('Could not reach the server')
@@ -121,6 +147,8 @@ export default function Expenses() {
         return
       }
 
+      // If you were editing the expense you just deleted, clear the form
+      if (editingId === id) resetForm()
       setRefreshKey((k) => k + 1)
     } catch {
       setDeleteError('Could not reach the server')
@@ -143,6 +171,10 @@ export default function Expenses() {
         onSubmit={handleSubmit}
         className="mt-6 grid gap-4 rounded-lg border border-neutral-800 p-5 sm:grid-cols-2"
       >
+        <p className="text-sm font-medium sm:col-span-2">
+          {editingId ? 'Editing an expense' : 'Add an expense'}
+        </p>
+
         <label className="block">
           <span className="text-sm text-neutral-400">Amount (₹)</span>
           <input
@@ -193,16 +225,25 @@ export default function Expenses() {
           />
         </label>
 
-        <div className="sm:col-span-2">
+        <div className="flex items-center gap-3 sm:col-span-2">
           <button
             type="submit"
             disabled={saving}
             className="rounded-md bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-400 disabled:opacity-50"
           >
-            {saving ? 'Saving…' : 'Add expense'}
+            {saving ? 'Saving…' : editingId ? 'Save changes' : 'Add expense'}
           </button>
-          {saveError && <p className="mt-3 text-sm text-red-400">{saveError}</p>}
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="rounded-md border border-neutral-800 px-4 py-2 text-neutral-300 hover:bg-neutral-800"
+            >
+              Cancel
+            </button>
+          )}
         </div>
+        {saveError && <p className="text-sm text-red-400 sm:col-span-2">{saveError}</p>}
       </form>
 
       {loading && <p className="mt-6 text-neutral-400">Loading…</p>}
@@ -226,6 +267,12 @@ export default function Expenses() {
               </div>
               <div className="flex items-center gap-4">
                 <p className="font-medium">₹{Number(exp.amount).toFixed(2)}</p>
+                <button
+                  onClick={() => startEdit(exp)}
+                  className="text-sm text-neutral-300 hover:text-neutral-100"
+                >
+                  Edit
+                </button>
                 <button
                   onClick={() => handleDelete(exp.id)}
                   className="text-sm text-red-400 hover:text-red-300"
