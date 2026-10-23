@@ -11,7 +11,10 @@ export default function Categories() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
-  // Load the categories when the page opens, and again after one is added
+  // Shown above the list when a delete fails
+  const [deleteError, setDeleteError] = useState('')
+
+  // Load the categories when the page opens, and again after a change
   useEffect(() => {
     setLoading(true)
     setError('')
@@ -58,6 +61,30 @@ export default function Categories() {
     }
   }
 
+  async function handleDelete(id) {
+    if (!window.confirm('Delete this category?')) return
+
+    setDeleteError('')
+
+    try {
+      const res = await fetch(`/api/categories/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+
+      // 204 means success and has no body, so don't parse JSON here
+      if (!res.ok) {
+        const data = await res.json()
+        setDeleteError(data.error || 'Could not delete category')
+        return
+      }
+
+      setRefreshKey((k) => k + 1)
+    } catch {
+      setDeleteError('Could not reach the server')
+    }
+  }
+
   return (
     <main className="min-w-0 flex-1 px-6 py-10 md:px-12">
       <h1 className="text-2xl font-semibold">Categories</h1>
@@ -83,15 +110,26 @@ export default function Categories() {
 
       {loading && <p className="mt-6 text-neutral-400">Loading…</p>}
       {error && <p className="mt-6 text-red-400">{error}</p>}
+      {deleteError && <p className="mt-6 text-sm text-red-400">{deleteError}</p>}
 
       {!loading && !error && (
         <ul className="mt-6 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
           {categories.map((c) => (
             <li key={c.id} className="flex items-center justify-between px-5 py-3">
               <span className="font-medium">{c.name}</span>
-              <span className="text-xs text-neutral-500">
-                {c.is_custom ? 'Custom' : 'Default'}
-              </span>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-neutral-500">
+                  {c.is_custom ? 'Custom' : 'Default'}
+                </span>
+                {c.is_custom && (
+                  <button
+                    onClick={() => handleDelete(c.id)}
+                    className="text-sm text-red-400 hover:text-red-300"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
