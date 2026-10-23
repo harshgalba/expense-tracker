@@ -4,9 +4,18 @@ export default function Categories() {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  // Load the categories once, when the page opens
+  // Form fields
+  const [newName, setNewName] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
+  // Load the categories when the page opens, and again after one is added
   useEffect(() => {
+    setLoading(true)
+    setError('')
+
     fetch('/api/categories', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
@@ -17,11 +26,60 @@ export default function Categories() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
-  }, [])
+  }, [refreshKey])
+
+  async function handleAdd(e) {
+    e.preventDefault()
+    setSaveError('')
+    setSaving(true)
+
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ name: newName }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        setSaveError(data.error || 'Could not add category')
+        return
+      }
+
+      setNewName('')
+      setRefreshKey((k) => k + 1)
+    } catch {
+      setSaveError('Could not reach the server')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <main className="min-w-0 flex-1 px-6 py-10 md:px-12">
       <h1 className="text-2xl font-semibold">Categories</h1>
+
+      <form onSubmit={handleAdd} className="mt-6 flex max-w-md flex-col gap-3 sm:flex-row">
+        <input
+          type="text"
+          required
+          placeholder="New category name"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          className="w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2"
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="shrink-0 rounded-md bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-400 disabled:opacity-50"
+        >
+          {saving ? 'Adding…' : 'Add'}
+        </button>
+      </form>
+      {saveError && <p className="mt-3 text-sm text-red-400">{saveError}</p>}
 
       {loading && <p className="mt-6 text-neutral-400">Loading…</p>}
       {error && <p className="mt-6 text-red-400">{error}</p>}
