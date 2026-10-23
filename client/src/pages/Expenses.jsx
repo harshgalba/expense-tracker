@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import MonthSummary from '../components/MonthSummary'
 
 function pad(n) {
   return String(n).padStart(2, '0')
@@ -167,6 +168,7 @@ export default function Expenses() {
         />
       </div>
 
+      <MonthSummary month={month} refreshKey={refreshKey} />
       <form
         onSubmit={handleSubmit}
         className="mt-6 grid gap-4 rounded-lg border border-neutral-800 p-5 sm:grid-cols-2"
