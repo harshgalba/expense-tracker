@@ -34,6 +34,9 @@ export default function Expenses() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
 
+  // Shown above the list when a delete fails
+  const [deleteError, setDeleteError] = useState('')
+
   // Load the categories once, when the page opens
   useEffect(() => {
     fetch('/api/categories', {
@@ -47,7 +50,7 @@ export default function Expenses() {
       .catch(() => setError('Could not load categories'))
   }, [])
 
-  // Load the expenses when the month changes, or after a new one is saved
+  // Load the expenses when the month changes, or after a save or delete
   useEffect(() => {
     setLoading(true)
     setError('')
@@ -97,6 +100,30 @@ export default function Expenses() {
       setSaveError('Could not reach the server')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm('Delete this expense?')) return
+
+    setDeleteError('')
+
+    try {
+      const res = await fetch(`/api/expenses/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+
+      // 204 means success and has no body, so don't parse JSON here
+      if (!res.ok) {
+        const data = await res.json()
+        setDeleteError(data.error || 'Could not delete expense')
+        return
+      }
+
+      setRefreshKey((k) => k + 1)
+    } catch {
+      setDeleteError('Could not reach the server')
     }
   }
 
@@ -180,6 +207,7 @@ export default function Expenses() {
 
       {loading && <p className="mt-6 text-neutral-400">Loading…</p>}
       {error && <p className="mt-6 text-red-400">{error}</p>}
+      {deleteError && <p className="mt-6 text-sm text-red-400">{deleteError}</p>}
 
       {!loading && !error && expenses.length === 0 && (
         <p className="mt-6 text-neutral-400">No expenses this month.</p>
@@ -196,7 +224,15 @@ export default function Expenses() {
                   {exp.note ? ` · ${exp.note}` : ''}
                 </p>
               </div>
-              <p className="font-medium">₹{Number(exp.amount).toFixed(2)}</p>
+              <div className="flex items-center gap-4">
+                <p className="font-medium">₹{Number(exp.amount).toFixed(2)}</p>
+                <button
+                  onClick={() => handleDelete(exp.id)}
+                  className="text-sm text-red-400 hover:text-red-300"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
