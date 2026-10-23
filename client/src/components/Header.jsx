@@ -10,7 +10,7 @@ function Header({ apiStatus }) {
         <nav className="flex gap-6 text-sm text-neutral-400">
           <span className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'}>API: {apiStatus}</span>
           <Link to="/login" className="hover:text-neutral-100">Log in</Link>
-          <a href="#" className="hover:text-neutral-100">Register</a>
+          <Link to="/register" className="hover:text-neutral-100">Register</Link>
         </nav>
       </div>
     </header>
