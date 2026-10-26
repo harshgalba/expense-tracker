@@ -14,6 +14,7 @@ import ThisMonth from './components/ThisMonth'
 function App() {
     // 'checking' → 'online' or 'offline'
   const [apiStatus, setApiStatus] = useState('checking')
+  const [dataVersion, setDataVersion] = useState(0)
 
   useEffect(() => {
     fetch('/api/health')
@@ -37,14 +38,14 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
+            <Route path="/expenses" element={<RequireAuth><Expenses onDataChange ={() => setDataVersion((v) => v + 1)} /></RequireAuth>} />
             <Route path="/categories" element={<RequireAuth><Categories /></RequireAuth>} />
             <Route path="/recurring" element={<RequireAuth><Recurring /></RequireAuth>} />
           </Routes>
         </div>
 
         {/* Right column: only on wide screens */}
-        <ThisMonth/>
+        <ThisMonth dataVersion={dataVersion} />
       </div>
     </div>
   )

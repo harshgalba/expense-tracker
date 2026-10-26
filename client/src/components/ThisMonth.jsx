@@ -7,7 +7,7 @@ function currentMonth() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-export default function ThisMonth() {
+export default function ThisMonth({ dataVersion}) {
   const location = useLocation()
   const [summary, setSummary] = useState(null)
   const token = localStorage.getItem('token')
@@ -22,7 +22,7 @@ export default function ThisMonth() {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setSummary(data))
       .catch(() => setSummary(null))
-  }, [token, location.pathname])
+  }, [token, location.pathname, dataVersion])
 
   return (
     <aside className="hidden w-56 shrink-0 py-10 pr-6 xl:block">

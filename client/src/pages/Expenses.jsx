@@ -19,7 +19,7 @@ function today() {
 
 const inputClass = 'mt-1 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2'
 
-export default function Expenses() {
+export default function Expenses({ onDataChange }) {
   const [month, setMonth] = useState(currentMonth)
   const [expenses, setExpenses] = useState([])
   const [categories, setCategories] = useState([])
@@ -123,6 +123,7 @@ export default function Expenses() {
 
       resetForm()
       setRefreshKey((k) => k + 1)
+      onDataChange()
     } catch {
       setSaveError('Could not reach the server')
     } finally {
@@ -151,6 +152,7 @@ export default function Expenses() {
       // If you were editing the expense you just deleted, clear the form
       if (editingId === id) resetForm()
       setRefreshKey((k) => k + 1)
+      onDataChange()
     } catch {
       setDeleteError('Could not reach the server')
     }
