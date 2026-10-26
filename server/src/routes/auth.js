@@ -5,6 +5,13 @@ import { pool } from '../db.js';
 
 const router = Router();
 
+function signToken(userId) {
+  return jwt.sign(
+    {userId},
+    process.env.JWT_SECRET,
+    { expiresIn: '1h'}
+  );
+}
 // Checks the register body. Returns an error message, or null if valid.
 function validateRegister(body) {
   const { name, email, password } = body ?? {};
@@ -72,11 +79,7 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ error: 'invalid email or password' });
   }
 
-  const token = jwt.sign(
-    { userId: user.id },          // what goes inside the token
-    process.env.JWT_SECRET,       // signs it
-    { expiresIn: '1h' }           // token stops working after 1 hour
-  );
+  const token = signToken(user.id);
 
   res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
 });
