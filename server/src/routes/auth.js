@@ -48,7 +48,9 @@ router.post('/register', async (req, res) => {
        RETURNING id, name, email, created_at`,   // no password_hash here
       [name, email, passwordHash]
     );
-    res.status(201).json(rows[0]);
+    const user = rows[0];
+    res.status(201).json({ token: signToken(user.id), user });
+    
   } catch (err) {
     // 23505 = Postgres "unique_violation" (email already exists)
     if (err.code === '23505') {
