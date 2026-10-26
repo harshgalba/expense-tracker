@@ -74,7 +74,7 @@ router.get('/summary', async (req, res) => {
   const { rows } = await pool.query(sql, [req.userId, `${month}-01`]);
 
   const total = rows.reduce((sum, row) => sum + Number(row.total), 0);
-  const count = rows.reduce((sum,row) => sum + Number(row.count), 0);
+  const count = rows.reduce((sum, row) => sum + Number(row.count), 0);
   res.json({ month, total: total.toFixed(2), count, byCategory: rows });
 });
 
