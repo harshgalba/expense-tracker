@@ -9,6 +9,7 @@ import Recurring from './pages/Recurring'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import RequireAuth from './components/RequireAuth'
+import ThisMonth from './components/ThisMonth'
 
 function App() {
     // 'checking' → 'online' or 'offline'
@@ -43,19 +44,7 @@ function App() {
         </div>
 
         {/* Right column: only on wide screens */}
-        <aside className="hidden w-56 shrink-0 py-10 pr-6 xl:block">
-          <p className="mb-3 text-sm font-semibold">This month</p>
-          <dl className="space-y-2 text-sm text-neutral-400">
-            <div className="flex justify-between">
-              <dt>Spent</dt>
-              <dd className="font-medium text-neutral-100">₹0</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt>Expenses</dt>
-              <dd className="font-medium text-neutral-100">0</dd>
-            </div>
-          </dl>
-        </aside>
+        <ThisMonth/>
       </div>
     </div>
   )
