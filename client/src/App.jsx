@@ -38,7 +38,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/expenses" element={<RequireAuth><Expenses onDataChange ={() => setDataVersion((v) => v + 1)} /></RequireAuth>} />
+            <Route path="/expenses" element={<RequireAuth><Expenses onDataChange={() => setDataVersion((v) => v + 1)} /></RequireAuth>} />
             <Route path="/categories" element={<RequireAuth><Categories /></RequireAuth>} />
             <Route path="/recurring" element={<RequireAuth><Recurring /></RequireAuth>} />
           </Routes>

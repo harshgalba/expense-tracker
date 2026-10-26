@@ -7,7 +7,7 @@ function currentMonth() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-export default function ThisMonth({ dataVersion}) {
+export default function ThisMonth({ dataVersion }) {
   const location = useLocation()
   const [summary, setSummary] = useState(null)
   const token = localStorage.getItem('token')
