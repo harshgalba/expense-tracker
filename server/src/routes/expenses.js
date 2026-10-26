@@ -62,7 +62,7 @@ router.get('/summary', async (req, res) => {
   }
 
   const sql = `
-    SELECT c.id AS category_id, c.name AS category, SUM(e.amount) AS total
+    SELECT c.id AS category_id, c.name AS category, SUM(e.amount) AS total, COUNT(e.id) AS count
     FROM expenses e
     JOIN categories c ON c.id = e.category_id
     WHERE e.user_id = $1
@@ -74,8 +74,8 @@ router.get('/summary', async (req, res) => {
   const { rows } = await pool.query(sql, [req.userId, `${month}-01`]);
 
   const total = rows.reduce((sum, row) => sum + Number(row.total), 0);
-
-  res.json({ month, total: total.toFixed(2), byCategory: rows });
+  const count = rows.reduce((sum,row) => sum + Number(row.count), 0);
+  res.json({ month, total: total.toFixed(2), count, byCategory: rows });
 });
 
 // GET /api/expenses/:id
