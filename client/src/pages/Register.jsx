@@ -26,7 +26,8 @@ export default function Register() {
         return
       }
 
-      navigate('/login')
+      localStorage.setItem('token', data.token)
+      navigate('/')
     } catch {
       setError('Could not reach the server. Is the API running?')
     } finally {
