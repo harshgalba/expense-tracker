@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router'
+import { getToken } from '../auth'
 
 function RequireAuth({ children }) {
-  const token = localStorage.getItem('token')
-
+  const token = getToken()
   if (!token) {
     return <Navigate to="/login" replace />
   }
