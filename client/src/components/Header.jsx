@@ -51,7 +51,7 @@ function Header({ apiStatus }) {
       {/* Phone drawer: outside <header> so backdrop-blur doesn't trap it */}
       {menuOpen && (
         <div className="fixed inset-0 z-20 md:hidden">
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMenuOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-64 border-r border-neutral-800 bg-[#111] px-6 py-6">
             <div className="mb-6 flex items-center justify-between">
               <span className="font-bold">Menu</span>
@@ -64,7 +64,7 @@ function Header({ apiStatus }) {
                 ✕
               </button>
             </div>
-            <NavLinks />
+            <NavLinks onNavigate={() => setMenuOpen(false)} />
           </aside>
         </div>
       )}
