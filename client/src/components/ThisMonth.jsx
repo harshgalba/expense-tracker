@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
+import { getToken } from '../auth'
 
 // 'YYYY-MM' for today, in the user's local time zone
 function currentMonth() {
@@ -10,7 +11,7 @@ function currentMonth() {
 export default function ThisMonth({ dataVersion }) {
   const location = useLocation()
   const [summary, setSummary] = useState(null)
-  const token = localStorage.getItem('token')
+  const token = getToken()
 
   // Reload when the token changes (log in / out) or the page changes
   useEffect(() => {
