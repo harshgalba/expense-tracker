@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import NavLinks from './NavLinks'
+import { getToken } from '../auth'
 
 function Header({ apiStatus }) {
   // Rerenders the header on every page change, so the login state stays current
   useLocation()
   const navigate = useNavigate()
-  const loggedIn = Boolean(localStorage.getItem('token'))
+  const loggedIn = Boolean(getToken())
   const [menuOpen, setMenuOpen] = useState(false)
 
   function logout() {
