@@ -17,7 +17,7 @@ function Header({ apiStatus }) {
   return (
     <>
       <header className="sticky top-0 z-10 h-16 border-b border-neutral-800 bg-[#111]/90 backdrop-blur">
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6">
+        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             {/* Hamburger: phones only */}
             <button
@@ -32,8 +32,8 @@ function Header({ apiStatus }) {
               Expense Tracker
             </Link>
           </div>
-          <nav className="flex gap-6 text-sm text-neutral-400">
-            <span className={apiStatus === 'online' ? 'text-green-400' : 'text-red-400'}>API: {apiStatus}</span>
+          <nav className="flex items-center gap-4 sm:gap-6 text-sm text-neutral-400">
+            <span className={`hidden sm:inline ${apiStatus === 'online' ? 'text-green-400' : 'text-red-400'}`}>API: {apiStatus}</span>
             {loggedIn ? (
               <button onClick={logout} className="hover:text-neutral-100">
                 Log out
