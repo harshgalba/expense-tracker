@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
+import { generateRecurring } from '../generateRecurring.js';
 
 const router = Router();
 
@@ -39,6 +40,8 @@ router.get('/', async (req, res) => {
     return res.status(400).json({ error: 'month must be YYYY-MM' });
   }
 
+  await generateRecurring(req.userId);
+
   const sql = `
     SELECT e.id, e.amount, e.spent_on, e.note, e.category_id, c.name AS category
     FROM expenses e
@@ -60,6 +63,8 @@ router.get('/summary', async (req, res) => {
   if (!/^\d{4}-\d{2}$/.test(month ?? '')) {
     return res.status(400).json({ error: 'month must be YYYY-MM' });
   }
+
+  await generateRecurring(req.userId);
 
   const sql = `
     SELECT c.id AS category_id, c.name AS category, SUM(e.amount) AS total, COUNT(e.id) AS count
