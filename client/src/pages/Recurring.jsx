@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+  import CategorySelect from '../components/CategorySelect'
+
 const inputClass = 'mt-1 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2'
 
 export default function Recurring() {
@@ -121,21 +123,12 @@ export default function Recurring() {
           />
         </label>
 
-        <label className="block">
-          <span className="text-sm text-neutral-400">Category</span>
-          <select
-            required
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className={inputClass}
-          >
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <CategorySelect
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+          onCreated={(cat) => setCategories((list) => [...list, cat])}
+        />
 
         <label className="block">
           <span className="text-sm text-neutral-400">Note (optional)</span>
@@ -187,4 +180,4 @@ export default function Recurring() {
       )}
     </main>
   )
-} 
+}
