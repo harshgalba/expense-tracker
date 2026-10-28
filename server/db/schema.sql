@@ -23,6 +23,7 @@ CREATE TABLE recurring_expenses (
     note          TEXT,
     starts_on     DATE NOT NULL DEFAULT CURRENT_DATE,
     active        BOOLEAN NOT NULL DEFAULT true,
+    generated_until DATE,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

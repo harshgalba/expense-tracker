@@ -24,8 +24,16 @@ export async function generateRecurring(userId) {
      WHERE r.user_id = $1
        AND r.active
        AND d.due >= r.starts_on
+       AND (r.generated_until IS NULL OR d.due > r.generated_until)
        AND d.due <= CURRENT_DATE
      ON CONFLICT (recurring_id, spent_on) DO NOTHING`,
+    [userId]
+  );
+  // Everything up to today is now handled for this user's active rules
+  await pool.query(
+    `UPDATE recurring_expenses
+     SET generated_until = CURRENT_DATE
+     WHERE user_id = $1 AND active`,
     [userId]
   );
 }
