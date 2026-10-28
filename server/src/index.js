@@ -4,7 +4,7 @@ import expensesRouter from './routes/expenses.js';
 import authRouter from './routes/auth.js';
 import { requireAuth } from './middleware/requireAuth.js';
 import categoriesRouter from './routes/categories.js';
-  import recurringRouter from './routes/recurring.js';
+import recurringRouter from './routes/recurring.js';
 
 const app = express();
 
@@ -21,7 +21,7 @@ app.use('/api/expenses', requireAuth , expensesRouter);
 
 app.use('/api/categories', requireAuth, categoriesRouter);
 
-  app.use('/api/recurring', requireAuth, recurringRouter);
+app.use('/api/recurring', requireAuth, recurringRouter);
 
 app.use((err, req, res, next) => {
   // Invalid JSON in the request body is the client's mistake, not a server bug
