@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import MonthSummary from '../components/MonthSummary'
+import CategorySelect from '../components/CategorySelect'
 
 function pad(n) {
   return String(n).padStart(2, '0')
@@ -203,21 +204,12 @@ export default function Expenses({ onDataChange }) {
           />
         </label>
 
-        <label className="block">
-          <span className="text-sm text-neutral-400">Category</span>
-          <select
-            required
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className={inputClass}
-          >
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <CategorySelect
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+          onCreated={(cat) => setCategories((list) => [...list, cat])}
+        />
 
         <label className="block">
           <span className="text-sm text-neutral-400">Note (optional)</span>
