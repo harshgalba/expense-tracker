@@ -74,4 +74,55 @@ router.post('/', async (req, res) => {
   res.status(201).json(rows[0]);
 });
 
+// PATCH /api/recurring/:id
+// Pause ({ "active": false }) or resume ({ "active": true }) a rule.
+router.patch('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'id must be a whole positive number' });
+  }
+
+  const { active } = req.body ?? {};
+  if (typeof active !== 'boolean') {
+    return res.status(400).json({ error: 'active must be true or false' });
+  }
+
+  // Resuming starts from today: mark everything before today as handled,
+  // so the paused months are not back-filled
+  const { rows } = await pool.query(
+    `UPDATE recurring_expenses
+     SET active = $1,
+         generated_until = CASE WHEN $1 THEN CURRENT_DATE - 1 ELSE generated_until END
+     WHERE id = $2 AND user_id = $3
+     RETURNING id, amount, day_of_month, note, starts_on, active, category_id`,
+    [active, id, req.userId]
+  );
+
+  if (rows.length === 0) {
+    return res.status(404).json({ error: 'recurring expense not found' });
+  }
+
+  res.json(rows[0]);
+});
+
+// DELETE /api/recurring/:id
+// Removes the rule. Expenses it already created stay (they are history).
+router.delete('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: 'id must be a whole positive number' });
+  }
+
+  const result = await pool.query(
+    'DELETE FROM recurring_expenses WHERE id = $1 AND user_id = $2',
+    [id, req.userId]
+  );
+
+  if (result.rowCount === 0) {
+    return res.status(404).json({ error: 'recurring expense not found' });
+  }
+
+  res.status(204).end();
+});
+
 export default router;
