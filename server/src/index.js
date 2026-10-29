@@ -17,7 +17,7 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/auth', authRouter);
 
-app.use('/api/expenses', requireAuth , expensesRouter);
+app.use('/api/expenses', requireAuth, expensesRouter);
 
 app.use('/api/categories', requireAuth, categoriesRouter);
 
