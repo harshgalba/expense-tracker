@@ -7,7 +7,7 @@ A small fullstack app to log expenses, organise them into categories and see mon
 - Add, edit and delete expenses (amount, date, category, note)
 - Default categories plus your own custom ones
 - Month filter, monthly total and total per category
-- Recurring monthly expenses (rent, subscriptions) that are added automatically on their day; pause, resume or delete them.
+- Recurring monthly expenses (rent, subscriptions) that are added automatically on their day; pause, resume or delete them
 - Create a new category straight from the expense and recurring forms
 - Responsive layout with a menu drawer on phones
 
