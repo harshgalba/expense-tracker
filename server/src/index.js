@@ -4,6 +4,7 @@ import expensesRouter from './routes/expenses.js';
 import authRouter from './routes/auth.js';
 import { requireAuth } from './middleware/requireAuth.js';
 import categoriesRouter from './routes/categories.js';
+import recurringRouter from './routes/recurring.js';
 
 const app = express();
 
@@ -16,11 +17,17 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/auth', authRouter);
 
-app.use('/api/expenses', requireAuth , expensesRouter);
+app.use('/api/expenses', requireAuth, expensesRouter);
 
 app.use('/api/categories', requireAuth, categoriesRouter);
 
+app.use('/api/recurring', requireAuth, recurringRouter);
+
 app.use((err, req, res, next) => {
+  // Invalid JSON in the request body is the client's mistake, not a server bug
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'request body is not valid JSON' });
+  }
   console.error(err);
   res.status(500).json({ error: 'Something went wrong' });
 });
