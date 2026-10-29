@@ -7,6 +7,8 @@ A small fullstack app to log expenses, organise them into categories and see mon
 - Add, edit and delete expenses (amount, date, category, note)
 - Default categories plus your own custom ones
 - Month filter, monthly total and total per category
+- Recurring monthly expenses (rent, subscriptions) that are added automatically on their day; pause, resume or delete them.
+- Create a new category straight from the expense and recurring forms
 - Responsive layout with a menu drawer on phones
 
 ## Stack
@@ -29,6 +31,12 @@ Browser (React) → /api (Vite proxy in dev) → Express (port 3000) → Postgre
 createdb expense_tracker
 psql expense_tracker -f server/db/schema.sql
 psql expense_tracker -c "INSERT INTO categories (name) VALUES ('Food'), ('Rent');"
+```
+
+**Already have the database from an earlier version?** Don't re-run `schema.sql`. Run the migrations you haven't run yet, in order, once each:
+```bash
+psql expense_tracker -f server/db/migrations/001_add_recurring_expenses.sql
+psql expense_tracker -f server/db/migrations/002_add_generated_until.sql
 ```
 The last line adds the default categories that every user sees.
 
@@ -68,5 +76,8 @@ notes/    Design notes (database, auth)
 | POST / PUT / DELETE | /api/expenses/:id | Add, edit, delete an expense |
 | GET / POST | /api/categories | List or add categories |
 | DELETE | /api/categories/:id | Delete a custom category |
+| GET / POST | /api/recurring | List or add recurring rules |
+| PATCH | /api/recurring/:id | Pause or resume a rule: `{ "active": false }` |
+| DELETE | /api/recurring/:id | Delete a rule (expenses it already added stay) |
 
-All `/api/expenses` and `/api/categories` routes need an `Authorization: Bearer <token>` header.
+All `/api/expenses`, `/api/categories` and `/api/recurring` routes need an `Authorization: Bearer <token>` header.
