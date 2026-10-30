@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-
-  import CategorySelect from '../components/CategorySelect'
+import CategorySelect from '../components/CategorySelect'
+import { api } from '../api'
 
 const inputClass = 'mt-1 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2'
 
@@ -24,9 +24,7 @@ export default function Recurring() {
 
   // Load the categories once, for the dropdown
   useEffect(() => {
-    fetch('/api/categories', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
+    api('/api/categories')
       .then((res) => res.json())
       .then((data) => {
         setCategories(data)
@@ -37,9 +35,7 @@ export default function Recurring() {
 
   // Load the rules when the page opens, and again after adding one
   useEffect(() => {
-    fetch('/api/recurring', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
+    api('/api/recurring')
       .then(async (res) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Could not load recurring expenses')
@@ -56,18 +52,14 @@ export default function Recurring() {
     setSaving(true)
 
     try {
-      const res = await fetch('/api/recurring', {
+        const res = await api('/api/recurring', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
+        body: {
           amount: Number(amount),
           day_of_month: Number(dayOfMonth),
           category_id: Number(categoryId),
           note: note.trim() || null,
-        }),
+        },
       })
       const data = await res.json()
 
@@ -89,13 +81,9 @@ export default function Recurring() {
   async function toggleActive(rule) {
     setActionError('')
     try {
-      const res = await fetch(`/api/recurring/${rule.id}`, {
+        const res = await api(`/api/recurring/${rule.id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ active: !rule.active }),
+        body: { active: !rule.active },
       })
       if (!res.ok) {
         const data = await res.json()
@@ -113,10 +101,7 @@ export default function Recurring() {
 
     setActionError('')
     try {
-      const res = await fetch(`/api/recurring/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
+      const res = await api(`/api/recurring/${id}`, { method: 'DELETE' })
       // 204 means success and has no body, so don't parse JSON here
       if (!res.ok) {
         const data = await res.json()
