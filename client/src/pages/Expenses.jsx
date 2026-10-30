@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import MonthSummary from '../components/MonthSummary'
 import CategorySelect from '../components/CategorySelect'
+import { api } from '../api'
 
 function pad(n) {
   return String(n).padStart(2, '0')
@@ -44,9 +45,7 @@ export default function Expenses({ onDataChange }) {
 
   // Load the categories once, when the page opens
   useEffect(() => {
-    fetch('/api/categories', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
+    api('/api/categories')
       .then((res) => res.json())
       .then((data) => {
         setCategories(data)
@@ -60,9 +59,8 @@ export default function Expenses({ onDataChange }) {
     setLoading(true)
     setError('')
 
-    fetch(`/api/expenses?month=${month}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
+    api(`/api/expenses?month=${month}`)
+
       .then(async (res) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Could not load expenses')
@@ -102,18 +100,14 @@ export default function Expenses({ onDataChange }) {
     const method = editingId ? 'PUT' : 'POST'
 
     try {
-      const res = await fetch(url, {
+        const res = await api(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
+        body: {
           amount: Number(amount),
           spent_on: spentOn,
           category_id: Number(categoryId),
           note: note.trim() || null,
-        }),
+        },
       })
       const data = await res.json()
 
@@ -138,10 +132,7 @@ export default function Expenses({ onDataChange }) {
     setDeleteError('')
 
     try {
-      const res = await fetch(`/api/expenses/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
+      const res = await api(`/api/expenses/${id}`, { method: 'DELETE' })
 
       // 204 means success and has no body, so don't parse JSON here
       if (!res.ok) {

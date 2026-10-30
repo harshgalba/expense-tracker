@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { api } from '../api'
 
 export default function MonthSummary({ month, refreshKey }) {
   const [summary, setSummary] = useState(null)
@@ -8,9 +9,7 @@ export default function MonthSummary({ month, refreshKey }) {
   useEffect(() => {
     setError('')
 
-    fetch(`/api/expenses/summary?month=${month}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
+    api(`/api/expenses/summary?month=${month}`)
       .then(async (res) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Could not load summary')
