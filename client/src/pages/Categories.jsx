@@ -114,7 +114,7 @@ export default function Categories() {
                 {c.is_custom && (
                   <button
                     onClick={() => handleDelete(c.id)}
-                    className="text-sm text-red-400 hover:text-red-300"
+                    className="rounded-md px-2 py-2 text-sm text-red-400 hover:bg-neutral-800 hover:text-red-300"
                   >
                     Delete
                   </button>

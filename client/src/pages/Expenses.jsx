@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import MonthSummary from '../components/MonthSummary'
 import CategorySelect from '../components/CategorySelect'
 import { api } from '../api'
+import { formatRupees } from '../format'
 
 function pad(n) {
   return String(n).padStart(2, '0')
@@ -100,7 +101,7 @@ export default function Expenses({ onDataChange }) {
     const method = editingId ? 'PUT' : 'POST'
 
     try {
-        const res = await api(url, {
+      const res = await api(url, {
         method,
         body: {
           amount: Number(amount),
@@ -244,25 +245,25 @@ export default function Expenses({ onDataChange }) {
       {!loading && !error && expenses.length > 0 && (
         <ul className="mt-6 divide-y divide-neutral-800">
           {expenses.map((exp) => (
-            <li key={exp.id} className="flex items-center justify-between py-3">
-              <div>
+            <li key={exp.id} className="flex items-center justify-between gap-4 py-3">
+              <div className="min-w-0">
                 <p className="font-medium">{exp.category}</p>
-                <p className="text-sm text-neutral-400">
+                <p className="break-words text-sm text-neutral-400">
                   {exp.spent_on}
                   {exp.note ? ` · ${exp.note}` : ''}
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <p className="font-medium">₹{Number(exp.amount).toFixed(2)}</p>
+              <div className="flex shrink-0 items-center gap-2">
+                <p className="font-medium">{formatRupees(exp.amount)}</p>
                 <button
                   onClick={() => startEdit(exp)}
-                  className="text-sm text-neutral-300 hover:text-neutral-100"
+                  className="rounded-md px-2 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(exp.id)}
-                  className="text-sm text-red-400 hover:text-red-300"
+                  className="rounded-md px-2 py-2 text-sm text-red-400 hover:bg-neutral-800 hover:text-red-300"
                 >
                   Delete
                 </button>

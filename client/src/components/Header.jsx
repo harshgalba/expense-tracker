@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import NavLinks from './NavLinks'
 import { getToken } from '../auth'
@@ -14,6 +14,19 @@ function Header({ apiStatus }) {
     localStorage.removeItem('token')
     navigate('/login')
   }
+
+  // While the drawer is open, Esc closes it
+  useEffect(() => {
+    if (!menuOpen) return
+
+    function onKeyDown(e) {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    // Cleanup: runs when the drawer closes or the header unmounts
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [menuOpen])
 
   return (
     <>

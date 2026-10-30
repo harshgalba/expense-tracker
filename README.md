@@ -30,15 +30,15 @@ Browser (React) → /api (Vite proxy in dev) → Express (port 3000) → Postgre
 ```bash
 createdb expense_tracker
 psql expense_tracker -f server/db/schema.sql
-psql expense_tracker -c "INSERT INTO categories (name) VALUES ('Food'), ('Rent');"
+psql expense_tracker -f server/db/seed.sql
 ```
+`schema.sql` creates the tables; `seed.sql` adds the default categories that every user sees.
 
-**Already have the database from an earlier version?** Don't re-run `schema.sql`. Run the migrations you haven't run yet, in order, once each:
+**Already have the database from an earlier version?** Don't re-run `schema.sql` or `seed.sql`. Run the migrations you haven't run yet, in order, once each:
 ```bash
 psql expense_tracker -f server/db/migrations/001_add_recurring_expenses.sql
 psql expense_tracker -f server/db/migrations/002_add_generated_until.sql
 ```
-The last line adds the default categories that every user sees.
 
 ### 3. Server
 ```bash

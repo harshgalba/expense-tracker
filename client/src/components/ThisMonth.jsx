@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { getToken } from '../auth'
 import { api } from '../api'
+import { formatRupees } from '../format'
 
 // 'YYYY-MM' for today, in the user's local time zone
 function currentMonth() {
@@ -33,7 +34,7 @@ export default function ThisMonth({ dataVersion }) {
           <div className="flex justify-between">
             <dt>Spent</dt>
             <dd className="font-medium text-neutral-100">
-              ₹{Number(summary.total).toLocaleString('en-IN')}
+              {formatRupees(summary.total)}
             </dd>
           </div>
           <div className="flex justify-between">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import CategorySelect from '../components/CategorySelect'
 import { api } from '../api'
+import { formatRupees } from '../format'
 
 const inputClass = 'mt-1 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2'
 
@@ -52,7 +53,7 @@ export default function Recurring() {
     setSaving(true)
 
     try {
-        const res = await api('/api/recurring', {
+      const res = await api('/api/recurring', {
         method: 'POST',
         body: {
           amount: Number(amount),
@@ -81,7 +82,7 @@ export default function Recurring() {
   async function toggleActive(rule) {
     setActionError('')
     try {
-        const res = await api(`/api/recurring/${rule.id}`, {
+      const res = await api(`/api/recurring/${rule.id}`, {
         method: 'PATCH',
         body: { active: !rule.active },
       })
@@ -193,7 +194,7 @@ export default function Recurring() {
         <ul className="mt-6 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
           {rules.map((r) => (
             <li key={r.id} className={`flex items-center justify-between gap-4 px-5 py-3 ${r.active ? '' : 'opacity-50'}`}>
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium">
                   {r.category}
                   {r.note ? <span className="text-neutral-400"> · {r.note}</span> : null}
@@ -203,17 +204,17 @@ export default function Recurring() {
                   {!r.active && ' · paused'}
                 </p>
               </div>
-                <div className="flex shrink-0 items-center gap-4">
-                <p className="font-medium">₹{Number(r.amount).toFixed(2)}</p>
+                <div className="flex shrink-0 items-center gap-2">
+                <p className="font-medium">{formatRupees(r.amount)}</p>
                 <button
                   onClick={() => toggleActive(r)}
-                  className="text-sm text-neutral-300 hover:text-neutral-100"
+                  className="rounded-md px-2 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100"
                 >
                   {r.active ? 'Pause' : 'Resume'}
                 </button>
                 <button
                   onClick={() => deleteRule(r.id)}
-                  className="text-sm text-red-400 hover:text-red-300"
+                  className="rounded-md px-2 py-2 text-sm text-red-400 hover:bg-neutral-800 hover:text-red-300"
                 >
                   Delete
                 </button>
