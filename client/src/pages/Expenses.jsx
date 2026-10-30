@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import MonthSummary from '../components/MonthSummary'
 import CategorySelect from '../components/CategorySelect'
 import { api } from '../api'
+import { formatRupees } from '../format'
 
 function pad(n) {
   return String(n).padStart(2, '0')
@@ -253,7 +254,7 @@ export default function Expenses({ onDataChange }) {
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                <p className="font-medium">₹{Number(exp.amount).toFixed(2)}</p>
+                <p className="font-medium">{formatRupees(exp.amount)}</p>
                 <button
                   onClick={() => startEdit(exp)}
                   className="text-sm text-neutral-300 hover:text-neutral-100"

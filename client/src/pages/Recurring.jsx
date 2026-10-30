@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import CategorySelect from '../components/CategorySelect'
 import { api } from '../api'
+import { formatRupees } from '../format'
 
 const inputClass = 'mt-1 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2'
 
@@ -204,7 +205,7 @@ export default function Recurring() {
                 </p>
               </div>
                 <div className="flex shrink-0 items-center gap-4">
-                <p className="font-medium">₹{Number(r.amount).toFixed(2)}</p>
+                <p className="font-medium">{formatRupees(r.amount)}</p>
                 <button
                   onClick={() => toggleActive(r)}
                   className="text-sm text-neutral-300 hover:text-neutral-100"
