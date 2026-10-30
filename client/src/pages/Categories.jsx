@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { api } from '../api'
 
 export default function Categories() {
   const [categories, setCategories] = useState([])
@@ -18,10 +19,9 @@ export default function Categories() {
   useEffect(() => {
     setLoading(true)
     setError('')
-
-    fetch('/api/categories', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
+    
+    api('/api/categories')
+      
       .then(async (res) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Could not load categories')
@@ -37,14 +37,7 @@ export default function Categories() {
     setSaving(true)
 
     try {
-      const res = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ name: newName }),
-      })
+      const res = await api('/api/categories', { method: 'POST', body: { name: newName } })
       const data = await res.json()
 
       if (!res.ok) {
@@ -67,11 +60,8 @@ export default function Categories() {
     setDeleteError('')
 
     try {
-      const res = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      })
-
+      const res = await api(`/api/categories/${id}`, { method: 'DELETE' })
+      
       // 204 means success and has no body, so don't parse JSON here
       if (!res.ok) {
         const data = await res.json()
