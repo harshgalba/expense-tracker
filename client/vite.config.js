@@ -11,7 +11,11 @@ export default defineConfig({
     VitePWA({
       // When a new version is built, the installed app updates itself on next load
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'logo.svg'],
+      workbox: {
+        // Page loads under /api/ must reach the server, never the cached app shell
+        navigateFallbackDenylist: [/^\/api\//],
+      },
       manifest: {
         name: 'Expense Tracker',
         short_name: 'Expenses',
