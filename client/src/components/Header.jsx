@@ -27,7 +27,7 @@ function Header({ apiStatus }) {
     // Cleanup: runs when the drawer closes or the header unmounts
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [menuOpen])
-  
+
   return (
     <>
       <header className="sticky top-0 z-10 h-16 border-b border-neutral-800 bg-[#111]/90 backdrop-blur">

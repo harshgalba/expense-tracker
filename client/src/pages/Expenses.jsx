@@ -101,7 +101,7 @@ export default function Expenses({ onDataChange }) {
     const method = editingId ? 'PUT' : 'POST'
 
     try {
-        const res = await api(url, {
+      const res = await api(url, {
         method,
         body: {
           amount: Number(amount),

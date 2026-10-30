@@ -53,7 +53,7 @@ export default function Recurring() {
     setSaving(true)
 
     try {
-        const res = await api('/api/recurring', {
+      const res = await api('/api/recurring', {
         method: 'POST',
         body: {
           amount: Number(amount),
@@ -82,7 +82,7 @@ export default function Recurring() {
   async function toggleActive(rule) {
     setActionError('')
     try {
-        const res = await api(`/api/recurring/${rule.id}`, {
+      const res = await api(`/api/recurring/${rule.id}`, {
         method: 'PATCH',
         body: { active: !rule.active },
       })
