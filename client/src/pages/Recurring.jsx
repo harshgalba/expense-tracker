@@ -194,7 +194,7 @@ export default function Recurring() {
         <ul className="mt-6 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
           {rules.map((r) => (
             <li key={r.id} className={`flex items-center justify-between gap-4 px-5 py-3 ${r.active ? '' : 'opacity-50'}`}>
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium">
                   {r.category}
                   {r.note ? <span className="text-neutral-400"> · {r.note}</span> : null}
@@ -204,17 +204,17 @@ export default function Recurring() {
                   {!r.active && ' · paused'}
                 </p>
               </div>
-                <div className="flex shrink-0 items-center gap-4">
+                <div className="flex shrink-0 items-center gap-2">
                 <p className="font-medium">{formatRupees(r.amount)}</p>
                 <button
                   onClick={() => toggleActive(r)}
-                  className="text-sm text-neutral-300 hover:text-neutral-100"
+                  className="rounded-md px-2 py-2 text-sm text-neutral-300 hover:bg-neutral-800 hover:text-neutral-100"
                 >
                   {r.active ? 'Pause' : 'Resume'}
                 </button>
                 <button
                   onClick={() => deleteRule(r.id)}
-                  className="text-sm text-red-400 hover:text-red-300"
+                  className="rounded-md px-2 py-2 text-sm text-red-400 hover:bg-neutral-800 hover:text-red-300"
                 >
                   Delete
                 </button>
