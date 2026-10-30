@@ -10,6 +10,7 @@ A small fullstack app to log expenses, organise them into categories and see mon
 - Recurring monthly expenses (rent, subscriptions) that are added automatically on their day; pause, resume or delete them
 - Create a new category straight from the expense and recurring forms
 - Responsive layout with a menu drawer on phones
+- Installable as an app (PWA): own window and icon, opens instantly from cache
 
 ## Stack
 - **Client:** React 19, Vite, Tailwind CSS v4, React Router v8
@@ -58,6 +59,16 @@ cd client
 npm install
 npm run dev             # open http://localhost:5173
 ```
+### 5. Install as an app (optional)
+The service worker is only created in a production build, so `npm run dev` never caches anything while you work. To try the installable app:
+```bash
+cd client
+npm run build
+npm run preview         # open http://localhost:4173
+```
+In Chrome, click the install icon in the address bar. Your login doesn't carry over from port 5173 (browser storage is per address), so log in again.
+
+Expense data is never cached: only the app's own files are, so the app opens without the network but needs the API for data.
 
 ## Project structure
 ```
