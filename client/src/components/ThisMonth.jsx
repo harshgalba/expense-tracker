@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { getToken } from '../auth'
+import { api } from '../api'
 
 // 'YYYY-MM' for today, in the user's local time zone
 function currentMonth() {
@@ -17,9 +18,7 @@ export default function ThisMonth({ dataVersion }) {
   useEffect(() => {
     if (!token) return
 
-    fetch(`/api/expenses/summary?month=${currentMonth()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    api(`/api/expenses/summary?month=${currentMonth()}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setSummary(data))
       .catch(() => setSummary(null))

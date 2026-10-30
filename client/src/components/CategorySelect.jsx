@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { api } from '../api'
 
 const inputClass = 'mt-1 w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2'
 
@@ -38,14 +39,7 @@ export default function CategorySelect({ categories, value, onChange, onCreated 
     setSaving(true)
 
     try {
-      const res = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ name: newName }),
-      })
+      const res = await api('/api/categories', { method: 'POST', body: { name: newName } })
       const data = await res.json()
 
       if (!res.ok) {
